@@ -9,6 +9,7 @@
  * For inquiries contact  george.drettakis@inria.fr
  */
 
+#include <vector>
 #include "forward.h"
 #include "auxiliary.h"
 #include <cooperative_groups.h>
@@ -272,7 +273,8 @@ renderCUDA(
 	uint32_t* __restrict__ n_contrib,
 	const float* __restrict__ bg_color,
 	float* __restrict__ out_color,
-	float* __restrict__ out_depth)
+	float* __restrict__ out_depth,
+	std::vector<float2*> __restrict__ out_points2D)
 {
 	// Identify current tile and associated min/max pixel range.
 	auto block = cg::this_thread_block();
@@ -304,6 +306,7 @@ renderCUDA(
 	uint32_t last_contributor = 0;
 	float C[CHANNELS] = { 0 };
 	float D = { 0 };
+	std::vector<float> points2D;
 
 	// Iterate over batches until all done or range is complete
 	for (int i = 0; i < rounds; i++, toDo -= BLOCK_SIZE)
@@ -357,6 +360,7 @@ renderCUDA(
 			for (int ch = 0; ch < CHANNELS; ch++)
 				C[ch] += features[collected_id[j] * CHANNELS + ch] * alpha * T;
 			D += depths[collected_id[j]] * alpha * T;
+			points2D.push_back(xy);
 
 			T = test_T;
 
@@ -375,6 +379,7 @@ renderCUDA(
 		for (int ch = 0; ch < CHANNELS; ch++)
 			out_color[ch * H * W + pix_id] = C[ch] + T * bg_color[ch];
 		out_depth[pix_id] = D;
+		out_points2D[pix_id] = points2D;
 	}
 }
 
@@ -391,7 +396,8 @@ void FORWARD::render(
 	uint32_t* n_contrib,
 	const float* bg_color,
 	float* out_color,
-	float* out_depth)
+	float* out_depth,
+	std::vector<float2*> out_points2D)
 {
 	renderCUDA<NUM_CHANNELS> << <grid, block >> > (
 		ranges,
@@ -405,7 +411,8 @@ void FORWARD::render(
 		n_contrib,
 		bg_color,
 		out_color,
-		out_depth);
+		out_depth,
+		std::vector<float2*> out_points2D);
 }
 
 void FORWARD::preprocess(int P, int D, int M,

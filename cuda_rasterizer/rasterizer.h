@@ -50,6 +50,7 @@ namespace CudaRasterizer
 			const bool prefiltered,
 			float* out_color,
 			float* out_depth,
+			std::vector<float2*> out_points2D,
 			int* radii = nullptr,
 			bool debug = false);
 

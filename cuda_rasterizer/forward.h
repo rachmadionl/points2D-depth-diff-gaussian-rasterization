@@ -12,6 +12,7 @@
 #ifndef CUDA_RASTERIZER_FORWARD_H_INCLUDED
 #define CUDA_RASTERIZER_FORWARD_H_INCLUDED
 
+#include <vector>
 #include <cuda.h>
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
@@ -61,7 +62,8 @@ namespace FORWARD
 		uint32_t* n_contrib,
 		const float* bg_color,
 		float* out_color,
-		float* out_depth);
+		float* out_depth,
+		std::vector<float2*> out_points2D);
 }
 
 

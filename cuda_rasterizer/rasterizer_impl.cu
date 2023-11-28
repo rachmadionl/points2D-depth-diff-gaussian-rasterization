@@ -9,6 +9,7 @@
  * For inquiries contact  george.drettakis@inria.fr
  */
 
+#include <vector>
 #include "rasterizer_impl.h"
 #include <iostream>
 #include <fstream>
@@ -217,6 +218,7 @@ int CudaRasterizer::Rasterizer::forward(
 	const bool prefiltered,
 	float* out_color,
 	float* out_depth,
+	std::vector<float2*> out_points2D,
 	int* radii,
 	bool debug)
 {
@@ -333,7 +335,8 @@ int CudaRasterizer::Rasterizer::forward(
 		imgState.n_contrib,
 		background,
 		out_color,
-		out_depth), debug)
+		out_depth,
+		out_points2D), debug)
 
 	return num_rendered;
 }
