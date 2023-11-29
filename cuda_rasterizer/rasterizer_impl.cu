@@ -218,7 +218,7 @@ int CudaRasterizer::Rasterizer::forward(
 	const bool prefiltered,
 	float* out_color,
 	float* out_depth,
-	std::vector<float2*> out_points2D,
+	std::vector<float2>* out_points2D,
 	int* radii,
 	bool debug)
 {

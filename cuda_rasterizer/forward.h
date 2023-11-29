@@ -63,7 +63,7 @@ namespace FORWARD
 		const float* bg_color,
 		float* out_color,
 		float* out_depth,
-		std::vector<float2*> out_points2D);
+		std::vector<float2>* out_points2D);
 }
 
 

@@ -274,7 +274,7 @@ renderCUDA(
 	const float* __restrict__ bg_color,
 	float* __restrict__ out_color,
 	float* __restrict__ out_depth,
-	std::vector<float2*> __restrict__ out_points2D)
+	std::vector<float2>* __restrict__ out_points2D)
 {
 	// Identify current tile and associated min/max pixel range.
 	auto block = cg::this_thread_block();
@@ -306,7 +306,7 @@ renderCUDA(
 	uint32_t last_contributor = 0;
 	float C[CHANNELS] = { 0 };
 	float D = { 0 };
-	std::vector<float> points2D;
+	std::vector<float2> points2D;
 
 	// Iterate over batches until all done or range is complete
 	for (int i = 0; i < rounds; i++, toDo -= BLOCK_SIZE)
@@ -397,7 +397,7 @@ void FORWARD::render(
 	const float* bg_color,
 	float* out_color,
 	float* out_depth,
-	std::vector<float2*> out_points2D)
+	std::vector<float2>* out_points2D)
 {
 	renderCUDA<NUM_CHANNELS> << <grid, block >> > (
 		ranges,
@@ -412,7 +412,7 @@ void FORWARD::render(
 		bg_color,
 		out_color,
 		out_depth,
-		std::vector<float2*> out_points2D);
+		out_points2D);
 }
 
 void FORWARD::preprocess(int P, int D, int M,
